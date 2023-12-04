@@ -6,15 +6,16 @@ import json
 THINGSBOARD_HOST = "demo.thingsboard.io"
 DEVICE_ACCESS_TOKEN = "7tZs7Otx4j5FIe9tqqmU"
 SLEEP_TIME = 3
-COFFEE_PRICE = 1000
-sensor_data = {'money_left': 2000, 'has_enough_money': True}
+COFFEE_PRICE = 500
+START_MONEY = 2000
+sensor_data = {'coffee_cost': COFFEE_PRICE, 'money_left': START_MONEY, 'has_enough_money': True}
     
 client = mqtt.Client()
 client.username_pw_set(DEVICE_ACCESS_TOKEN, "")
 client.connect(THINGSBOARD_HOST, 1883, 60)
 client.loop_start()
 client.publish("v1/devices/me/telemetry", json.dumps(sensor_data))
-print("Start money: 2000, and a coffee costs ", COFFEE_PRICE)
+print("Start money: {}, and a coffee costs {}".format(START_MONEY, COFFEE_PRICE))
 
 try:
     while True:
