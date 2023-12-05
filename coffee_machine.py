@@ -5,6 +5,7 @@ import json
 
 THINGSBOARD_HOST = "demo.thingsboard.io"
 DEVICE_ACCESS_TOKEN = "7tZs7Otx4j5FIe9tqqmU"
+TOPIC = "v1/devices/me/telemetry"
 SLEEP_TIME = 3
 COFFEE_PRICE = 1000
 START_MONEY = 2000
@@ -14,32 +15,40 @@ client = mqtt.Client()
 client.username_pw_set(DEVICE_ACCESS_TOKEN, "")
 client.connect(THINGSBOARD_HOST, 1883, 60)
 client.loop_start()
-client.publish("v1/devices/me/telemetry", json.dumps(sensor_data))
-print("Start money: {}, and a coffee costs {}".format(START_MONEY, COFFEE_PRICE))
+client.publish(TOPIC, json.dumps(sensor_data))
+print("Start money is {} Ft and a coffee costs {} Ft".format(START_MONEY, COFFEE_PRICE))
 
 try:
     while True:
-        options = int(input("Options (0: Cancel, 1: Buy coffee, 2: Pay in money): "))
+
+        options = int(input("Options: (0: Cancel, 1: Buy coffee, 2: Pay in money): "))
+
         if (options == 1):
             if (sensor_data["has_enough_money"] == True and sensor_data["money_left"] - COFFEE_PRICE >= 0): 
                 sensor_data["money_left"] = sensor_data["money_left"] - COFFEE_PRICE
-                if (sensor_data["money_left"] == 0 or sensor_data["money_left"] < COFFEE_PRICE): 
+                if sensor_data["money_left"] < COFFEE_PRICE: 
                     sensor_data["has_enough_money"] = False
-                client.publish("v1/devices/me/telemetry", json.dumps(sensor_data))
                 print("Coffee bought ", sensor_data)
                 time.sleep(SLEEP_TIME)
             else: 
                 print("Not enough money")
                 sensor_data["has_enough_money"] = False
-                client.publish("v1/devices/me/telemetry", json.dumps(sensor_data))
+
+            client.publish(TOPIC, json.dumps(sensor_data))
+
         if (options == 2):
-            money = int(input("How much do you want to pay in? "))
+            money = int(input("How much do you want to pay in? (Ft) "))
+            print("You paid in {} Ft".format(money))
             sensor_data["money_left"] = sensor_data["money_left"] + money
-            if(sensor_data["money_left"] >= COFFEE_PRICE): sensor_data["has_enough_money"] = True
-            client.publish("v1/devices/me/telemetry", json.dumps(sensor_data))
+            if sensor_data["money_left"] >= COFFEE_PRICE: 
+                sensor_data["has_enough_money"] = True
+            client.publish(TOPIC, json.dumps(sensor_data))
 
 except KeyboardInterrupt:
     pass
+
+except ValueError:
+    print("Invalid value given, program ends.")
 
 client.loop_stop()
 client.disconnect()
