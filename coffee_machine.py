@@ -21,28 +21,32 @@ print("Start money is {} Ft and a coffee costs {} Ft".format(START_MONEY, COFFEE
 try:
     while True:
 
-        options = int(input("Options: (0: Cancel, 1: Buy coffee, 2: Pay in money): "))
+        options = int(input("Options: (1: Buy coffee, 2: Pay in money, 3: Check my balance): "))
 
-        if (options == 1):
-            if (sensor_data["has_enough_money"] == True and sensor_data["money_left"] - COFFEE_PRICE >= 0): 
-                sensor_data["money_left"] = sensor_data["money_left"] - COFFEE_PRICE
-                if sensor_data["money_left"] < COFFEE_PRICE: 
+        match options: 
+            case 1:
+                if sensor_data["money_left"] - COFFEE_PRICE >= 0: 
+                    sensor_data["money_left"] -= COFFEE_PRICE
+                    if sensor_data["money_left"] < COFFEE_PRICE: 
+                        sensor_data["has_enough_money"] = False
+                    print("Coffee bought ", sensor_data)
+                    time.sleep(SLEEP_TIME)
+                else: 
+                    print("Not enough money")
                     sensor_data["has_enough_money"] = False
-                print("Coffee bought ", sensor_data)
-                time.sleep(SLEEP_TIME)
-            else: 
-                print("Not enough money")
-                sensor_data["has_enough_money"] = False
 
-            client.publish(TOPIC, json.dumps(sensor_data))
+                client.publish(TOPIC, json.dumps(sensor_data))
 
-        if (options == 2):
-            money = int(input("How much do you want to pay in? (Ft) "))
-            print("You paid in {} Ft".format(money))
-            sensor_data["money_left"] = sensor_data["money_left"] + money
-            if sensor_data["money_left"] >= COFFEE_PRICE: 
-                sensor_data["has_enough_money"] = True
-            client.publish(TOPIC, json.dumps(sensor_data))
+            case 2:
+                money = int(input("How much do you want to pay in? (Ft) "))
+                print("You paid in {} Ft".format(money))
+                sensor_data["money_left"] += money
+                if sensor_data["money_left"] >= COFFEE_PRICE: 
+                    sensor_data["has_enough_money"] = True
+                client.publish(TOPIC, json.dumps(sensor_data))
+
+            case 3:
+                print("You have {} Ft".format(sensor_data["money_left"]))
 
 except KeyboardInterrupt:
     pass
