@@ -18,7 +18,7 @@ On the created dashboard, you can see your current money what's left, whether it
 
 ## How to run
 
-- Install Thingsboard [On Premise](https://thingsboard.io/docs/user-guide/install/windows/) or [using Docker](https://thingsboard.io/docs/user-guide/install/docker-windows/).
+- Install Thingsboard [On Premise](https://thingsboard.io/docs/user-guide/install/windows/) or [using Docker](https://thingsboard.io/docs/user-guide/install/docker-windows/), or use the [Demo version online](https://demo.thingsboard.io/).
 - Create a device in your Thingsboard.
 - In the python code, change the THINGSBOARD_HOST and the DEVICE_ACCESS_TOKEN constants.
 - Create the alarm and the dashboard in thingsboard (or you can import the .json files).
